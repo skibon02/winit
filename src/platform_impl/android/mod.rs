@@ -470,6 +470,33 @@ impl<T: 'static> EventLoop<T> {
                             },
                         };
                         callback(event, self.window_target());
+
+                        let meta = key.meta_state();
+                        let mut modifiers_state =
+                            crate::keyboard::ModifiersState::default();
+                        if meta.alt_on() {
+                            modifiers_state
+                                .set(crate::keyboard::ModifiersState::ALT, true);
+                        }
+                        if meta.shift_on() {
+                            modifiers_state
+                                .set(crate::keyboard::ModifiersState::SHIFT, true);
+                        }
+                        if meta.ctrl_on() {
+                            modifiers_state
+                                .set(crate::keyboard::ModifiersState::CONTROL, true);
+                        }
+                        if meta.meta_on() {
+                            modifiers_state
+                                .set(crate::keyboard::ModifiersState::SUPER, true);
+                        }
+                        let modifiers_event = event::Event::WindowEvent {
+                            window_id: window::WindowId(WindowId),
+                            event: event::WindowEvent::ModifiersChanged(
+                                modifiers_state.into(),
+                            ),
+                        };
+                        callback(modifiers_event, self.window_target());
                     },
                 }
             },
